@@ -1,3 +1,5 @@
+# https://www.pyimagesearch.com/2016/10/03/bubble-sheet-multiple-choice-scanner-and-test-grader-using-omr-python-and-opencv/
+
 # import the necessary packages
 from imutils.perspective import four_point_transform
 from imutils import contours
@@ -101,7 +103,7 @@ for (q, i) in enumerate(np.arange(0, len(questionCnts), 5)):
 		# if the current total has a larger number of total
 		# non-zero pixels, then we are examining the currently
 		# bubbled-in answer
-		if bubbled is None or total > bubbled[0]:
+		if bubbled is None or total > bubbled[0]: # pylint: disable=E1136
 			bubbled = (total, j)
 		# initialize the contour color and the index of the
 	# *correct* answer
