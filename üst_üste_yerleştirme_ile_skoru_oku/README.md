@@ -71,4 +71,4 @@ print("Score:", score)
 
 Örnek:
 
-`python3 main.py -i 20200305112230_006.png`
+`python3 main.py -i 20200305112230_007.png`
