@@ -107,11 +107,12 @@ mask_bubbles = contours.sort_contours(mask_bubbles, method="top-to-bottom")[0]
 
 score = ""
 
+bubbled = [[], []]
+
 # Her satır 10 daire içerecek şekilde tüm satırları gez.
-for (_, i) in enumerate(np.arange(0, len(mask_bubbles), 10)):
+for (k, i) in enumerate(np.arange(0, len(mask_bubbles), 10)):
     # her satırdaki ilk 10 daireyi soldan sağa sırala
     cnts = contours.sort_contours(mask_bubbles[i:i + 10])[0]
-    bubbled = None
 
     for (j, c) in enumerate(cnts):
         # yalnızca mevcut dairenin gözükmesi için bir maske oluştur
@@ -124,16 +125,30 @@ for (_, i) in enumerate(np.arange(0, len(mask_bubbles), 10)):
         area = math.pi * ((min(w, h) / 2) ** 2)
         percent_marked = total / area
         # eğer sıfır olmayan piksellerin sayısı bir önceki daireninkinden fazlaysa bu daire işaretlenmiştir kabul edilir.
-        if (bubbled is None or total > bubbled[0]) and percent_marked >= 0.8:  # pylint: disable=E1136
-            bubbled = (total, j)
+        # if (bubbled is None or total > bubbled[0]) and percent_marked >= 0.8:  # pylint: disable=E1136
+        #     bubbled = (total, j)
+        if percent_marked >= 0.8:
+            bubbled[k].append((total, j))
 
-    if bubbled:
-        score += str(score_keys[bubbled[1]])
-        # draw the outline of the bubbled
-        color = (0, 0, 255)
-        cv2.drawContours(total_score_contour_image, [cnts[bubbled[1]]], -1, color, 3)
+    if bubbled[k]:
+        for b in bubbled[k]:
+            score += str(score_keys[b[1]])
+
+            # draw the outline of the bubbled
+            color = (0, 0, 255)
+            cv2.drawContours(total_score_contour_image, [cnts[b[1]]], -1, color, 3)
+    else:
+        score += "?"
 
 print("Score:", score)
+
+if ("?" in score) or len(score) > 3:
+    print("Hatalı skor!")
+else:
+    if (len(score) == 2) or ((len(score) == 3) and score == "100"):
+        print("Doğru skor!")
+    else:
+        print("Hatalı skor!")
 
 cv2.imshow("bubbleds", total_score_contour_image)
 cv2.waitKey(0)
